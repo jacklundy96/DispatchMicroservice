@@ -15,3 +15,10 @@ variables:
 steps:
 - script: dotnet build ./source/repos/OrderDispatchService/OrderDispatchService/OrderDispatchService.csproj --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
+
+
+#- task: Docker@1
+#  displayName: 'OrderDispatchServiceContainer'
+#  inputs:
+#    azureSubscriptionEndpoint: 'ServiceEndpoint'
+#    azureContainerRegistry: contoso.azurecr.io
