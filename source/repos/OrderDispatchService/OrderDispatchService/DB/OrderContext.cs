@@ -11,6 +11,7 @@ namespace OrderDispatchService.DB
     {
         public OrderContext(DbContextOptions<OrderContext> options) : base(options)
         {
+
         }
 
         public DbSet<Order> Orders { get; set; }
@@ -18,6 +19,7 @@ namespace OrderDispatchService.DB
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Order>().ToTable("Order");
+
         }
     }
 }

@@ -21,11 +21,11 @@ namespace OrderDispatchService.Controllers
 
         // GET: api/Dispatch
         [HttpGet]
-        public IActionResult Get([FromBody]int OrderRef)
+        public IActionResult Get([FromBody]Order order)
         {
             try
             {
-                return new OkObjectResult(_ds.GetOrder(OrderRef));
+                return new JsonResult(_ds.GetOrder(order.Id));
             } catch (Exception ex)
             {
                 return BadRequest();
@@ -34,12 +34,20 @@ namespace OrderDispatchService.Controllers
 
         // POST: api/Dispatch
         [HttpPost]
-        public IActionResult Post([FromBody] Order Order)
+        public IActionResult Post([FromBody] Order order)
         {
             try
             {
-                var res = _ds.SaveOrder(Order);
-                return Ok();
+                int count = order.GetAll().Where(x => String.IsNullOrWhiteSpace(x) || String.IsNullOrEmpty(x)).Count();
+
+                if (count > 0)
+                    return BadRequest();
+                else
+                {
+                    var res = _ds.SaveOrder(order);
+                    return Ok();
+                }
+
             }
             catch (Exception ex)
             {
@@ -48,12 +56,12 @@ namespace OrderDispatchService.Controllers
         }
 
         // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int OrderRef)
+        [HttpDelete]
+        public IActionResult Delete([FromBody]Order order)
         {
             try
             {
-                var res = _ds.DeleteDispatch(OrderRef);
+                var res = _ds.DeleteDispatch(order.OrderRef);
                 return Ok();
             }
             catch (Exception ex)

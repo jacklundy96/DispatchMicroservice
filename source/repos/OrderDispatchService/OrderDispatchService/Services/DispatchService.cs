@@ -11,12 +11,11 @@ namespace OrderDispatchService
 {
     public class DispatchService
     {
-        //private readonly OrderContext _context;
+        private readonly OrderContext _context;
 
-         public DispatchService()
+         public DispatchService(OrderContext context)
         {
-            //OrderContext context
-            //_context = context; 
+            _context = context; 
         }
 
         /// <summary>
@@ -24,24 +23,14 @@ namespace OrderDispatchService
         /// </summary>
         /// <param name="OrderId"> unique identification number for the order</param>
         /// <returns></returns>
-        public IActionResult GetOrder(int OrderId)
+        public JsonResult GetOrder(int OrderId)
         {
-            //var result = _context.Orders.First(x => x.Id == OrderId);
-            //if (result != null)
-            //    return new OkObjectResult(result);
-            //else
-                return new NotFoundResult();
-        }
+            var result = _context.Orders.Where(x => x.Id == OrderId);
+            if (result != null)
 
-        /// <summary>
-        /// Updates an order providing the legacy dispatch database has not already picked it up
-        /// </summary>
-        /// <param name="OrderId"> unique identification number for the order </param>
-        /// <returns>IActionResult denoting request status</returns>
-        public IActionResult UpdateOrder(int OrderId)
-        {
-            //_context.Orders.Find();
-            return new OkResult();
+                return new JsonResult(result);
+            else
+                return new JsonResult("No records found");
         }
 
         /// <summary>
@@ -49,10 +38,10 @@ namespace OrderDispatchService
         /// </summary>
         /// <param name="order">The order object in question</param>
         /// <returns>IActionResult denoting request status</returns>
-        public IActionResult SaveOrder([FromBody] Order order)
+        public IActionResult SaveOrder(Order order)
         {
-           // _context.Orders.Add(order);
-           // _context.SaveChanges();
+            _context.Orders.Add(order);
+            _context.SaveChanges();
 
             return new OkResult();
         }
@@ -62,10 +51,19 @@ namespace OrderDispatchService
         /// </summary>
         /// <param name="Order">The order object in question</param>
         /// <returns>IActionResult denoting request status</returns>
-        public IActionResult DeleteDispatch(int id)
+        public IActionResult DeleteDispatch(string OrderRef)
         {
-            //_context.Orders.RemoveRange(_context.Orders.Where(x => x.OrderRef == id));
-            //_context.SaveChanges();
+            //check too see that all orders under the order reference haven't been dispatched if they have not we can delete them 
+            var result = _context.Orders.Where(x => x.OrderRef.Equals(OrderRef));
+            int noDispatched = result.Count() - result.Where(x => x.DispatchDate.Equals(Convert.ToDateTime("0001-01-01 00:00:00.0000000"))).Count();
+            if (noDispatched == 0)
+            {
+                _context.Orders.RemoveRange(_context.Orders.Where(x => x.OrderRef == OrderRef));
+                _context.SaveChanges();
+            }
+            else
+                return new JsonResult("Cancellation not possible as some items have already been dispatched");
+           
             return new OkResult();
         }
 

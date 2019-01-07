@@ -12,7 +12,7 @@ namespace OrderDispatchService.DTOs
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         //some form of reference back to the originating order; more than one dispatch per order is permitted.
-        public int OrderRef { get; set; }
+        public string OrderRef { get; set; }
         // sufficiently unique for the dispatchers to identify the product to send, ideally a foreign key into another ThAmCo db, but it must not be a foreign key to the third party suppliers.
         public string ProductRef { get; set; }
         //number of the product to dispatch.
@@ -23,5 +23,11 @@ namespace OrderDispatchService.DTOs
         public DateTime OrderDate { get; set; }
         //the datetime the dispatch was processed and completed; must be nullable; changes made to the row will be ignored by the dispatch process after this column has value.
         public DateTime DispatchDate { get; set; }
+
+        public List<string> GetAll()
+        {
+            return new List<string> (){ Id.ToString(), OrderRef.ToString(), ProductRef, Quantity.ToString(), Address, OrderDate.ToString(), DispatchDate.ToString() };
+        }
+
     }
 }
