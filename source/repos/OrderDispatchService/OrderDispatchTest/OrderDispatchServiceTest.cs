@@ -92,7 +92,7 @@ namespace OrderDispatchTest
 
                 var expected = orders[0];
                 var actual = cls.GetOrder(1);
-
+        
                 //Assert.True(actual. != null);
             }
         }

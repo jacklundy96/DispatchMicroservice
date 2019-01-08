@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrderDispatchService.DB;
+using OrderDispatchService.Services;
 
 namespace OrderDispatchService
 {
@@ -31,6 +32,7 @@ namespace OrderDispatchService
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddTransient<DBService, DBService>();
             services.AddTransient<DispatchService, DispatchService>();
         }
 

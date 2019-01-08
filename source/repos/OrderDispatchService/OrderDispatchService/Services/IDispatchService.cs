@@ -5,10 +5,10 @@ namespace OrderDispatchService
 {
     public interface IDispatchService
     {
-        JsonResult GetOrder(int OrderId);
+        Order GetOrder(int OrderId);
 
-        IActionResult SaveOrder(Order order);
+        bool SaveOrder(Order order);
 
-        IActionResult DeleteDispatch(string OrderRef);
+        bool DeleteDispatch(string OrderRef);
     }
 }

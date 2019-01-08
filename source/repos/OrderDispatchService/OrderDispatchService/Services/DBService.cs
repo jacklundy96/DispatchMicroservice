@@ -26,6 +26,8 @@ namespace OrderDispatchService.Services
 
         public Order GetOrder(int OrderId)
         {
+            if (0 == _context.Orders.Count())
+                return null;
             return _context.Orders.First(x => x.Id == OrderId);
         }
 

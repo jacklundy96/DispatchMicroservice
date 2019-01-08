@@ -19,16 +19,21 @@ namespace OrderDispatchService.Controllers
             _ds = ds;
         }
 
-        // GET: api/Dispatch
-        [HttpGet]
-        public IActionResult Get([FromBody]Order order)
+        // GET: api/Dispatch/{id}
+        [HttpGet("{id}")]
+        public IActionResult Get([FromRoute]int id)
         {
             try
             {
-                return new JsonResult(_ds.GetOrder(order.Id));
+                var result = _ds.GetOrder(id);
+
+                if (result != null)
+                    return Ok(result);
+                else
+                    return NotFound(new JsonResult("Unable to find error"));
             } catch (Exception ex)
             {
-                return BadRequest();
+                return new StatusCodeResult(500);
             }
         }
 
@@ -39,11 +44,14 @@ namespace OrderDispatchService.Controllers
             try
             {
                 var res = _ds.SaveOrder(order);
-                return Ok();
+                if (res)
+                    return Ok();
+                else
+                    return new JsonResult("Unable to save the object at this time as a field is missing");
             }
             catch (Exception ex)
             {
-                return BadRequest();
+                return new StatusCodeResult(500);
             }
         }
 
@@ -54,11 +62,14 @@ namespace OrderDispatchService.Controllers
             try
             {
                 var res = _ds.DeleteDispatch(order.OrderRef);
-                return Ok();
+                if (res)
+                    return Ok();
+                else
+                    return BadRequest("Cancellation not possible as some items have already been dispatched");
             }
             catch (Exception ex)
             {
-                return BadRequest();
+                return new StatusCodeResult(500);
             }
         }
     }
