@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using OrderDispatchService.DB;
 using OrderDispatchService.DTOs;
+using OrderDispatchService.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +10,14 @@ using System.Threading.Tasks;
 
 namespace OrderDispatchService
 {
-    public class DispatchService
-    {
-        private readonly OrderContext _context;
+    public class DispatchService : IDispatchService
 
-         public DispatchService(OrderContext context)
+    {
+        private readonly DBService _DBService;
+
+         public DispatchService(DBService DBService)
         {
-            _context = context; 
+            _DBService = DBService; 
         }
 
         /// <summary>
@@ -25,7 +27,7 @@ namespace OrderDispatchService
         /// <returns></returns>
         public JsonResult GetOrder(int OrderId)
         {
-            var result = _context.Orders.Where(x => x.Id == OrderId);
+            var result = _DBService.GetOrder(OrderId);
             if (result != null)
 
                 return new JsonResult(result);
@@ -40,9 +42,13 @@ namespace OrderDispatchService
         /// <returns>IActionResult denoting request status</returns>
         public IActionResult SaveOrder(Order order)
         {
-            _context.Orders.Add(order);
-            _context.SaveChanges();
+            int count = order.GetAll().Where(x => String.IsNullOrWhiteSpace(x) || String.IsNullOrEmpty(x)).Count();
 
+            if (count > 0)
+                return new BadRequestResult();
+            else
+                _DBService.SaveOrder(order);
+            
             return new OkResult();
         }
 
@@ -54,18 +60,14 @@ namespace OrderDispatchService
         public IActionResult DeleteDispatch(string OrderRef)
         {
             //check too see that all orders under the order reference haven't been dispatched if they have not we can delete them 
-            var result = _context.Orders.Where(x => x.OrderRef.Equals(OrderRef));
+            var result = _DBService.GetOrders().Where(x => x.OrderRef.Equals(OrderRef));
             int noDispatched = result.Count() - result.Where(x => x.DispatchDate.Equals(Convert.ToDateTime("0001-01-01 00:00:00.0000000"))).Count();
             if (noDispatched == 0)
-            {
-                _context.Orders.RemoveRange(_context.Orders.Where(x => x.OrderRef == OrderRef));
-                _context.SaveChanges();
-            }
+                _DBService.DeleteDispatch(OrderRef);
             else
                 return new JsonResult("Cancellation not possible as some items have already been dispatched");
            
             return new OkResult();
         }
-
     }
 }

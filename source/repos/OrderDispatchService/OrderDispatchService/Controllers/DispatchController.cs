@@ -38,16 +38,8 @@ namespace OrderDispatchService.Controllers
         {
             try
             {
-                int count = order.GetAll().Where(x => String.IsNullOrWhiteSpace(x) || String.IsNullOrEmpty(x)).Count();
-
-                if (count > 0)
-                    return BadRequest();
-                else
-                {
-                    var res = _ds.SaveOrder(order);
-                    return Ok();
-                }
-
+                var res = _ds.SaveOrder(order);
+                return Ok();
             }
             catch (Exception ex)
             {
