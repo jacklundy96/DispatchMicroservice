@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 namespace OrderDispatchService
 {
     public class DispatchService : IDispatchService
-
     {
         private readonly DBService _DBService;
 
@@ -63,7 +62,7 @@ namespace OrderDispatchService
             //check too see that all orders under the order reference haven't been dispatched if they have not we can delete them 
             var result = _DBService.GetOrders().Where(x => x.OrderRef.Equals(OrderRef));
             int noDispatched = result.Count() - result.Where(x => x.DispatchDate.Equals(Convert.ToDateTime("0001-01-01 00:00:00.0000000"))).Count();
-            if (noDispatched == 0)
+            if (noDispatched == 0 && result.Count() != 0)
             {
                 _DBService.DeleteDispatch(OrderRef);
                 return true;

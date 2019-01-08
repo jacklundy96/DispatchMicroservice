@@ -28,7 +28,9 @@ namespace OrderDispatchService.Services
         {
             if (0 == _context.Orders.Count())
                 return null;
-            return _context.Orders.First(x => x.Id == OrderId);
+                var first =  _context.Orders.FirstOrDefault(x => x.Id == OrderId);
+                //if (first == default(someType)) // null for reference types.
+               return first;
         }
 
         public List<Order> GetOrders()
