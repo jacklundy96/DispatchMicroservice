@@ -41,36 +41,24 @@ namespace OrderDispatchService.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Order order)
         {
-            try
-            {
-                var res = _ds.SaveOrder(order);
-                if (res)
-                    return Ok();
-                else
-                    return new JsonResult("Unable to save the object at this time as a field is missing");
-            }
-            catch (Exception ex)
-            {
-                return new StatusCodeResult(500);
-            }
+
+            var res = _ds.SaveOrder(order);
+            if (res)
+                return Ok();
+            else
+                return new JsonResult("Unable to save the object at this time as a field is missing");
+
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete]
-        public IActionResult Delete([FromBody]Order order)
+        public IActionResult Delete([FromBody] Order order)
         {
-            try
-            {
-                var res = _ds.DeleteDispatch(order.OrderRef);
-                if (res)
-                    return Ok();
-                else
-                    return BadRequest("Cancellation not possible as some items have already been dispatched");
-            }
-            catch (Exception ex)
-            {
-                return new StatusCodeResult(500);
-            }
+            var res = _ds.DeleteDispatch(order.OrderRef);
+            if (res)
+                return Ok();
+            else
+                return BadRequest("Cancellation not possible as some items have already been dispatched");
         }
     }
 }
